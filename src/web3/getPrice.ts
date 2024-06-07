@@ -1,33 +1,26 @@
-import Moralis from "moralis";
-import { EvmChain } from "@moralisweb3/common-evm-utils";
+import Moralis from 'moralis';
+ export const priceFetch = async(apiKey:string,address:string)=>{
+try {
+  if(!Moralis.Core.isStarted){
+    await Moralis.start({
+    apiKey
+  });}
 
-export const priceFetch = async (key: string, addr: string) => {
-  try{if (key) {
-    if (!Moralis.Core.isStarted) {
-      await Moralis.start({
-        apiKey: key,
-      });
-    }
-  }
-  if(addr){
-    let chain,address
-    if(addr === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"){
-        console.log('eth')
-        chain = EvmChain.ETHEREUM;
-        address = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
-    }else{
-        chain = EvmChain.ARBITRUM
-         address = addr
-    }
-  console.log(address)
-
-  const response = await Moralis.EvmApi.token.getTokenPrice({
-    address,
-    chain,
+  let response
+  if(address.toLocaleLowerCase()=="0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE".toLocaleLowerCase()){
+  response = await Moralis.EvmApi.token.getTokenPrice({
+    "chain": "0x1",
+    "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
   });
-
-  return (response.toJSON());
-}}catch(err){
-    console.error(err)
+}else{
+response = await Moralis.EvmApi.token.getTokenPrice({
+  "chain": "0xa4b1",
+  "address": address
+});
 }
-};
+
+ return response.toJSON()
+} catch (e) {
+  console.error(e);
+}
+}

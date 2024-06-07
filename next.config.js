@@ -1,16 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images:{
-    domains:[
-      "tokens.1inch.io"
-    ]
-  },
-  reactStrictMode: true,
-  webpack5:true,
-  webpack:(config)=>{
-    config.resolve.fallback={fs:false}
-    return config;
-  },
+images:{
+  remotePatterns:[{
+    hostname:"tokens.1inch.io"
+  },{
+    hostname:"127.0.0.1"
+  }]
+}
+
  
 }
 

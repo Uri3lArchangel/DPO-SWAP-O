@@ -1,3 +1,4 @@
+
 interface MyObject {
     [key: string]: {
       symbol: string;
@@ -24,7 +25,7 @@ export const tokensData:MyObject= {
     },
     "Direct Private Offers":{
         symbol:"DPO",
-        logo:"",
+        logo:process.env.NODE_ENV == 'production'?"https://swap.dpo-global.com/assets/DPO-Imgur.png":"http://127.0.0.1:3000/assets/DPO-Imgur.png",
         address:"0x73ea12A934a9A08614D165DB30F87BdfD1A2Cb92",
         decimals:18
     },
@@ -103,7 +104,7 @@ export const tokensDataArry:MyObjectArray[]= [
     {
         name:"Direct Private Offers",
         symbol:"DPO",
-        logo:"",
+        logo:process.env.NODE_ENV == 'production'?"https://swap.dpo-global.com/assets/DPO-Imgur.png":"http://127.0.0.1:3000/assets/DPO-Imgur.png",
         address:"0x73ea12A934a9A08614D165DB30F87BdfD1A2Cb92",
         decimals:18
     },
@@ -176,3 +177,48 @@ export const tokensDataArry:MyObjectArray[]= [
    
   
 }]
+
+
+export const commonCoins:MyObjectArray[]= [
+    
+  {
+     name:"Ethereum",
+   symbol: "ETH",
+   logo: "https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png",
+   address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+   decimals: 18,
+ },
+ {
+     name:"Direct Private Offers",
+     symbol:"DPO",
+     logo:process.env.NODE_ENV == 'production'?"https://swap.dpo-global.com/assets/DPO-Imgur.png":"http://127.0.0.1:3000/assets/DPO-Imgur.png",
+     address:"0x73ea12A934a9A08614D165DB30F87BdfD1A2Cb92",
+     decimals:18
+ },
+{
+ name:"Tether USD",
+   symbol: "USDT",
+   logo: "https://tokens.1inch.io/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
+   address: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+   decimals: 6,
+ },
+
+
+ {
+     name: "Uniswap",
+     symbol: "UNI",
+     decimals: 18,
+     address: "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0",
+     logo: "https://tokens.1inch.io/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png",
+    
+   },
+  {
+     name:  "Arbitrum",
+     symbol: "ARB",
+     decimals: 18,
+     address: "0x912ce59144191c1204e64559fe8253a0e49e6548",
+     logo: "https://tokens.1inch.io/0x912ce59144191c1204e64559fe8253a0e49e6548.png",
+},
+
+
+]

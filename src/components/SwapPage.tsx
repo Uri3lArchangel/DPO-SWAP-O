@@ -1,52 +1,21 @@
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { HiChevronDown } from "react-icons/hi2";
-import React, {
-  ChangeEvent,
-  ChangeEventHandler,
-  CSSProperties,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { message } from "antd";
-import Dropdown from "../src/components/Dropdown";
-import { blur, unblur } from "../src/functions/backgrounBlur";
-import { OPEN_CLOSE } from "../src/functions/selectToken";
-import RootLayout from "../src/Layouts/RootLayout";
-import { web3 } from "../src/web3/metamaskConect";
-import hm_l from "/styles/light/Home.module.css";
-import axios, { AxiosError } from "axios";
-import Typewriter from "../src/components/TypeWritter";
-import CustomCOnnectButton from "../src/components/CustomCOnnectButton";
-import { getAccount } from "@wagmi/core";
+"use client";
+import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount } from "wagmi";
-import { NextRequest, NextResponse } from "next/server";
-import { NextApiRequest, NextApiResponse } from "next";
-import { tokensData } from "../src/core/tokenData";
-import { RTB } from "../src/web3/returnTokenBalance";
-import { priceFetch } from "../src/web3/getPrice";
+import { web3 } from "@/src/web3/metamaskConect";
+import { message } from "antd";
+import { tokensData } from "@/src/core/tokenData";
+import { RTB } from "@/src/web3/returnTokenBalance";
+import { priceFetch } from "@/src/web3/getPrice";
+import TypeWritter from "./TypeWritter";
+import hm from "@/styles/Home.module.css";
+import Image from "next/image";
+import { HiChevronDown } from "react-icons/hi";
+import CustomCOnnectButton from "./CustomCOnnectButton";
+import Dropdown from "./Dropdown";
+import axios from "axios";
+import { getBalance } from "../web3/getBalance";
 
-let hm = hm_l;
-
-const addressParagraphStyle: CSSProperties = {
-  position: "absolute",
-  bottom: "0%",
-  fontSize: "2rem",
-  width: "100%",
-  textAlign: "center",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
-  color: "white",
-};
-
-interface PROPS {
-  apikey: string;
-}
-
-function Home({ apikey }: PROPS) {
-  const router = useRouter();
-
+function SwapPage({ apikey }: { apikey: string }) {
   // variables and states that hold the token addresses of selected tokens
   let fromToken: string = "";
   const [fromTokenState, setFromToken] = useState<string>(
@@ -73,10 +42,7 @@ function Home({ apikey }: PROPS) {
   const [txData, setTxData] = useState("");
 
   // balance of from token
-  const [fromBalance, setFromBalance] = useState<number>(0);
-
-  // state check to see if token select window is opened or not
-  const [opened, setStateOpened] = useState<boolean>(false);
+  const [balance, setBalance] = useState<string|null>('');
 
   // address of current user connected
   const { address, isConnected } = useAccount();
@@ -88,7 +54,16 @@ function Home({ apikey }: PROPS) {
   let tokenName: string = "";
 
   // id of from or to button selected
-  const [id, setId] = useState("");
+
+  //modal state
+  const [modal, setModal] = useState(false);
+
+  // modal instance for
+  const [modalInstance, setModalInstance] = useState<"from" | "to">("from");
+
+  const [selectedFromToken, setSelectedFromToken] = useState("Ethereum");
+
+  const [selectedToToken, setSelectedToToken] = useState("Tether USD");
 
   // image of currently selected token
   const [fromTokenImage, setFromTokenImage] = useState(
@@ -109,6 +84,8 @@ function Home({ apikey }: PROPS) {
 
   const [messageApi, contextHolder] = message.useMessage();
 
+  const [priceUSD,setPriceUSD]=useState<null | number>(null)
+
   //transaction message for swap
   const txObject = {
     from: address,
@@ -116,6 +93,31 @@ function Home({ apikey }: PROPS) {
     value: String(value),
     data: String(txData),
   };
+  useEffect(()=>{
+    const run=async() =>{
+    setFromPrice( ((await priceFetch(apikey,tokensData[selectedFromToken].address))!.usdPrice).toFixed(2))
+    if(useAccount().address){
+      const a = await getBalance(apikey,String(useAccount().address),tokensData[selectedFromToken].address)
+     setBalance(a!.balance)
+    }
+    }
+run()
+  },[selectedFromToken])
+
+  useEffect(()=>{
+    const run=async() =>{
+    setToPrice( ((await priceFetch(apikey,tokensData[selectedToToken].address))!.usdPrice).toFixed(2))
+      if(useAccount().address){
+        const a = await getBalance(apikey,String(useAccount().address),tokensData[selectedFromToken].address)
+       setBalance(a!.balance)
+      }
+    
+    }
+run()
+  },[selectedToToken])
+
+  
+
 
   const confirmSwap = async () => {
     try {
@@ -130,41 +132,32 @@ function Home({ apikey }: PROPS) {
     }
   };
 
-  function open_close(e: React.MouseEvent<HTMLElement>) {
-    if (!opened) {
-      setButton(e.currentTarget);
-      setId(e.currentTarget.id);
-      blur();
-    } else {
-      unblur();
-      if (tokenName) {
-        if (id == "from") {
-          fromToken = tokensData[tokenName].address;
-          setFromToken(fromToken);
-          setFromTokenImage(tokensData[tokenName].logo);
-        } else if (id == "to") {
-          toToken = tokensData[tokenName].address;
-          setToTokenImage(tokensData[tokenName].logo);
-          setToToken(toToken);
-        }
-      }
-    }
+  // modal functions
 
-    setStateOpened(OPEN_CLOSE());
-  }
+  const changeModalState = () => {
+    setModal(!modal);
+  };
+  const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setModal(true);
+    setModalInstance(e.currentTarget.id as "from" | "to");
+  };
+  const closeModal = () => {
+    setModal(false);
+  };
 
-  function selectTokenItem(e: React.MouseEvent<HTMLElement>) {
-    let id = e.currentTarget.id;
-    let element = document.querySelector(`#${id} p`) as HTMLParagraphElement;
-    tokenName = element.innerHTML;
-    // setSelectedTokenName(tokenName);
-    if (tokenName != "" && selectedButton != undefined) {
-      document.querySelector(`#${selectedButton.id} p`)!.innerHTML =
-        tokensData[tokenName].symbol;
+  const selectToken = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLLIElement>
+  ) => {
+    if (modalInstance == "from") {
+      setSelectedFromToken(e.currentTarget.id);
     }
-    unblur();
-    open_close(e);
-  }
+    if(modalInstance == 'to'){
+      setSelectedToToken(e.currentTarget.id);
+      
+    }
+  };
+
+  
 
   async function changeValue(e: ChangeEvent<HTMLInputElement>) {
     let value = parseFloat(e.currentTarget.value);
@@ -174,7 +167,7 @@ function Home({ apikey }: PROPS) {
   }
   const max = async () => {
     (document.getElementById("input1") as HTMLInputElement).value =
-      String(fromBalance);
+      String(balance);
     await getInchSwap();
   };
   async function getInchSwap() {
@@ -216,114 +209,106 @@ function Home({ apikey }: PROPS) {
     if (slippageRef.current) {
       setSlippageValue(parseInt(slippageRef.current?.value));
     }
-
   };
   useEffect(() => {
     const init = async () => {
       RTB(apikey, address!);
-      if (fromTokenState) {
-        setFromPrice(
-          String(
-            (await priceFetch(apikey, fromTokenState))?.usdPrice?.toFixed(2)
-          )
-        );
-      }
-      if (toTokenState) {
-        setToPrice(
-          String((await priceFetch(apikey, toTokenState))?.usdPrice?.toFixed(2))
-        );
-      }
-      getAccount();
-    };
     init();
-  }, [address, fromTokenImage, fromTokenState, toTokenState]);
+    }
+  }, [address, fromTokenImage]);
 
   return (
-    <RootLayout>
+    <main>
       {contextHolder}
-      <article
-        id="main"
-        className={hm.main}
-        onClick={(e) => {
-          if (opened) {
-            open_close(e);
-          }
-        }}
-      >
+      <article id="main" className={hm.main} onClick={(e) => {}}>
         <div className={hm.Container}>
-          <Typewriter text="DPO SWAP" />
+          <TypeWritter text="DPO SWAP" />
           <section className={hm.swapContainer}>
-            <section className={hm.fromSwapContainer}>
-              <div>
-                <button
-                  id="from"
-                  className={hm.SwapButton}
-                  onClick={open_close}
-                >
+            <section className={hm.fromSwapContainer +' swap-div bg-black/70 py-6 rounded-3xl px-8  mb-2'}>
+              <div className=" p-4">
+                <button id="from" className={hm.SwapButton} onClick={openModal}>
                   <Image
-                    src={fromTokenImage}
+                    src={tokensData[selectedFromToken].logo}
                     width="240"
                     decoding="sync"
+                    loading="eager"
+                    fetchPriority="high"
                     height="240"
                     alt="logo"
                   />
-                  <p className="mx-2 text-2xl">ETH</p>
+                  <p className="mx-2 text-2xl">
+                    {tokensData[selectedFromToken].symbol}
+                  </p>
                   <HiChevronDown className="mx-1" size={15} />
                 </button>
 
                 <div className="">
-                  <p className="text-right text-lg text-gray-500 md:text-2xl">
-                    Balance: 0
-                  </p>
-                  <div className="flex justify-between ">
-                    <button
-                      onClick={max}
-                      className="bg-gray-200 px-4 py-2 rounded-full text-xl mr-1 md:text-2xl md:px-8 md:py-3 "
-                    >
-                      Max
-                    </button>
+                  <p className="text-right text-2xl my-2 text-white">
+                    Balance: {balance}
+                  </p> 
+                  <div className="flex flex-col items-end space-y-4">
+                  
+                 <label htmlFor="slippage" className="bg-[var(--theme-green)]  p-3 cursor-pointer outline-none rounded-lg text-white text-2xl ">
                     <select
+                  
                       id="slippage"
                       ref={slippageRef}
-                      className="bg-gray-200 px-2 py-1 cursor-pointer outline-none rounded-full text-xl ml-1 md:text-2xl md:px-8 md:py-3"
+                      className="bg-[var(--theme-green)] outline-none cursor-pointer"
                     >
-                      <option value="1">Slippage: 2%</option>
+                      <option value="1" >Slippage: 2%</option>
                       <option value="5">Slippage: 10%</option>
                       <option value="25">Slippage: 50%</option>
                       <option value="35">Slippage: 70%</option>
                       <option value="50">Slippage: 100%</option>
                     </select>
+                    </label>
+                       <button
+                      onClick={max}
+                      className=" border-[#fff] text-[#fff] border w-fit px-6 py-3  rounded-xl text-xl"
+                    >
+                      Max
+                    </button>
                   </div>
                 </div>
               </div>
               <label htmlFor="input1"></label>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center py-6 bg-[#0003] rounded-3xl px-8 ">
                 <input
                   id="input1"
-                  type="text"
-                  className={hm.input}
+                  type="number"
+                  className={hm.input + ' bg-transparent placeholder:text-[#ddd] text-white py-4 outline-none text-2xl'}
                   placeholder="Enter Amount"
                   onChange={changeValue}
                   onKeyUp={getInchSwap}
                   maxLength={6}
                 />
-                <span className="text-gray-600 text-xl">${fromPrice}</span>
+                <span className="text-white text-xl">${fromPrice}</span>
               </div>
             </section>
 
-            <section className={hm.toSwapContainer}>
-              <button id="to" onClick={open_close} className={hm.SwapButton}>
-                <Image src={toTokenImage} width="240" height="240" alt="logo" />
-                <p className="mx-2 text-2xl">USDT</p>
+            <section className={hm.toSwapContainer+' swap-div bg-black/70 rounded-3xl '}>
+              <button id="to" onClick={openModal} className={hm.SwapButton}>
+                <Image
+                  src={tokensData[selectedToToken].logo}
+                  width="240"
+                  height="240"
+                  decoding="sync"
+                  fetchPriority="high"
+                  loading="eager"
+                  alt="logo"
+                />
+                <p className="mx-2 text-2xl">
+                  {tokensData[selectedToToken].symbol}
+                </p>
                 <HiChevronDown className="mx-1" size={15} />
               </button>
               <label htmlFor="input2Disabled"></label>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center py-6 bg-[#0003] rounded-3xl px-8  my-4" >
                 <input
                   id="input2Disabled"
-                  type="text"
+                  type="number"
                   placeholder="Amount to Receive"
-                  className={hm.input}
+                  className={hm.input + ' bg-transparent placeholder:text-[#ddd] text-white py-4 outline-none text-2xl'}
                   value={
                     !valueExchanged
                       ? ""
@@ -337,7 +322,7 @@ function Home({ apikey }: PROPS) {
                   }
                   readOnly
                 />
-                <span className="text-gray-600 text-xl">${toPrice}</span>
+                <span className="text-white text-xl">${toPrice}</span>
               </div>
             </section>
             <div className={"my-3 " + hm.connectButtonContainer}>
@@ -351,27 +336,17 @@ function Home({ apikey }: PROPS) {
         </div>
       </article>
 
-      {opened ? (
-        <Dropdown select={selectTokenItem} close={open_close} hm={hm} />
+      {modal ? (
+        <Dropdown
+          modal={modal}
+          setModal={setModal}
+          selectToken={selectToken}
+        />
       ) : (
         <></>
       )}
-    </RootLayout>
+    </main>
   );
 }
 
-export default Home;
-interface ServerObj {
-  req: NextApiRequest;
-  res: NextApiResponse;
-}
-
-export async function getServerSideProps({ req, res }: ServerObj) {
-  if (req.url == "https://swap.directprivatepffers/assets/*") {
-    res.redirect("https://swap.directprivateoffers.com/404");
-  }
-  const apikey = process.env.APIKEY;
-  return {
-    props: { apikey },
-  };
-}
+export default SwapPage;
