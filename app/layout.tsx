@@ -7,25 +7,25 @@ import "@rainbow-me/rainbowkit/styles.css";
 import hm from "@/styles/Home.module.css";
 import WalletProviderContext from "@/src/contexts/WalletProviderContext";
 
-export const metatdata: Metadata = {
-  metadataBase: new URL("https://swap.dpo-global.com/"),
-  description:
-    "A Decentralized Swap Exchange of the DPO (Direct Private Offers) Security token, the main domain is at https://directprivateoffers.com",
-  keywords: [
-    "DEX",
-    "SWAP",
-    "EXCHANGE",
-    "WEB3",
-    " BLOCKCHAIN",
-    "DPO",
-    "ARBITRIUM",
-    "SECURITY",
-    "TOKEN",
-  ],
-  alternates: {
-    canonical: "https://swap.dpo-global.com/",
-  },
-};
+// export const metatdata: Metadata = {
+//   metadataBase: new URL("https://swap.dpo-global.com/"),
+//   description:
+//     "A Decentralized Swap Exchange of the DPO (Direct Private Offers) Security token, the main domain is at https://directprivateoffers.com",
+//   keywords: [
+//     "DEX",
+//     "SWAP",
+//     "EXCHANGE",
+//     "WEB3",
+//     " BLOCKCHAIN",
+//     "DPO",
+//     "ARBITRIUM",
+//     "SECURITY",
+//     "TOKEN",
+//   ],
+//   alternates: {
+//     canonical: "https://swap.dpo-global.com/",
+//   },
+// };
 
 function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -1,7 +1,6 @@
 "use client";
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount } from "wagmi";
-import { web3 } from "@/src/web3/metamaskConect";
 import { message } from "antd";
 import { tokensData } from "@/src/core/tokenData";
 import { RTB } from "@/src/web3/returnTokenBalance";
@@ -44,8 +43,6 @@ function SwapPage({ apikey }: { apikey: string }) {
   // balance of from token
   const [balance, setBalance] = useState<string|null>('');
 
-  // address of current user connected
-  const { address, isConnected } = useAccount();
 
   // the from or to button clicked on
   const [selectedButton, setButton] = useState<HTMLElement>();
@@ -85,6 +82,7 @@ function SwapPage({ apikey }: { apikey: string }) {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [priceUSD,setPriceUSD]=useState<null | number>(null)
+  const {address}=useAccount()
 
   //transaction message for swap
   const txObject = {
@@ -96,8 +94,8 @@ function SwapPage({ apikey }: { apikey: string }) {
   useEffect(()=>{
     const run=async() =>{
     setFromPrice( ((await priceFetch(apikey,tokensData[selectedFromToken].address))!.usdPrice).toFixed(2))
-    if(useAccount().address){
-      const a = await getBalance(apikey,String(useAccount().address),tokensData[selectedFromToken].address)
+    if(address){
+      const a = await getBalance(apikey,String(address),tokensData[selectedFromToken].address)
      setBalance(a!.balance)
     }
     }
@@ -107,8 +105,8 @@ run()
   useEffect(()=>{
     const run=async() =>{
     setToPrice( ((await priceFetch(apikey,tokensData[selectedToToken].address))!.usdPrice).toFixed(2))
-      if(useAccount().address){
-        const a = await getBalance(apikey,String(useAccount().address),tokensData[selectedFromToken].address)
+      if(address){
+        const a = await getBalance(apikey,String(address),tokensData[selectedFromToken].address)
        setBalance(a!.balance)
       }
     
@@ -120,17 +118,17 @@ run()
 
 
   const confirmSwap = async () => {
-    try {
-      if (web3) {
-        const sendTx = await web3.eth.sendTransaction(txObject);
-        console.log(sendTx);
-      } else {
-        return;
-      }
-    } catch (err: any) {
-      alert(err.message);
-    }
-  };
+    // try {
+    //   if (web3) {
+    //     const sendTx = await web3.eth.sendTransaction(txObject);
+    //     console.log(sendTx);
+    //   } else {
+    //     return;
+    //   }
+    // } catch (err: any) {
+    //   alert(err.message);
+    // }
+  }
 
   // modal functions
 

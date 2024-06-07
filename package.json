@@ -19,6 +19,7 @@
     "encoding": "^0.1.13",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.3",
+    "lucide-react": "^0.390.0",
     "moralis": "^2.26.2",
     "next": "^14.2.3",
     "pino-pretty": "^11.1.0",
