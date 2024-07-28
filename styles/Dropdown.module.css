@@ -1,0 +1,36 @@
+.dropDownTokenList {
+    list-style: none;
+    max-height: 400px;
+    overflow-y: scroll;
+  }
+  .dropDownTokenList li {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid transparent;
+    padding: 1em 0.3em;
+    border-radius: 1rem;
+    color: transparent;
+    -webkit-background-clip: text;
+    box-shadow: 1px 1px 4px #00000033;
+    margin: 0.5em 0;
+    background-image: linear-gradient(to right, limegreen, cyan);
+  }
+  .dropDownTokenList li:hover {
+    opacity: 0.8;
+  }
+  .dropDownTokenList img {
+    width: 40px;
+    height: 40px;
+    margin: 0em 0.3em;
+    user-select: none;
+  }
+  .dropDownTokenList li p {
+    font-size: 2rem;
+    font-family: girlfriend;
+    font-weight: 100;
+    letter-spacing: 2px;
+    user-select: none;
+  }
+  

@@ -1,0 +1,50 @@
+/*Animation keyframes*/
+
+/*Top Bar*/
+
+.topBar {
+    border-bottom-left-radius: 0.7rem;
+    border-bottom-right-radius: 0.7rem;
+    position: fixed;
+    width: 100%;
+    z-index: 2;
+    box-shadow: 1px 0 10px #00000055;
+  }
+  .topContainer {
+    margin: auto;
+    width: 100%;
+    cursor: pointer;
+    padding: 0.2em 0;
+    background-color: #607D8B;
+  }
+  
+  .topContainer h1 {
+    font-size: 1.4em;
+    line-height: 20px;
+    text-align: center;
+    font-weight: 100;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0 0.4em;
+    color: var(--sideBar_text_light);
+    font-weight: 400;
+    font-style: italic;
+    font-family: poppins;
+  }
+  .lowerContainer {
+    align-items: center;
+    background-color: #ffffff;
+  }
+  .lowerContainer span {
+    font-size: 2rem;
+    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+    display: block;
+    text-align: center;
+  }
+  
+
+  .imageContainer {
+    width: fit-content;
+  
+    margin: auto;
+  }
+  

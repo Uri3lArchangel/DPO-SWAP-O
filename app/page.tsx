@@ -1,11 +1,11 @@
-import SwapPage from "../src/components/SwapPage"
+import SwapPage from "@/src/fe/components/SwapPage"
 import React from "react"
 
 
 
 function page() {
   return(
-    <SwapPage apikey={ process.env.apiKey!} />
+    <SwapPage apikey={ process.env.apiKey!} inchKey ={ process.env.INCHAPIKEY!} />
   )
 }
 

@@ -1,11 +1,11 @@
 import React from "react";
-import Footer from "@/src/components/Footer";
-import TopBar from "@/src/components/TopBar";
 import { Metadata } from "next";
-import "../styles/globals.css";
+import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import hm from "@/styles/Home.module.css";
-import WalletProviderContext from "@/src/contexts/WalletProviderContext";
+import WalletProviderContext from "@/src/fe/contexts/WalletProviderContext";
+import Footer from "@/src/fe/components/Footer";
+import TopBar from "@/src/fe/components/TobBar";
+
 
 // export const metatdata: Metadata = {
 //   metadataBase: new URL("https://swap.dpo-global.com/"),
@@ -37,11 +37,12 @@ function RootLayout({ children }: { children: React.ReactNode }) {
         <link rel="canonical" href="https://swap.dpo-global.com" />
       </head>
       <body>
-      <TopBar mode={hm} />
-      <main >
+      <TopBar />
+      <main>
+        
         <WalletProviderContext>{children}</WalletProviderContext>
       </main>
-      <Footer mode={hm} />
+      <Footer />
       </body>
     </html>
   );
